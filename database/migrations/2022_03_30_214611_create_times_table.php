@@ -15,8 +15,10 @@ class CreateTimesTable extends Migration
     {
         Schema::create('times', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('pharmacy_id');
+            $table->integer('user_id')->index();
+            $table->integer('pharmacy_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('pharmacy_id')->references('id')->on('pharmacies')->onDelete('cascade');
             $table->date('date');
             $table->string('day');
             $table->string('start_time');

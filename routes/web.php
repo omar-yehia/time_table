@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+ 
+
+Route::resource('admins', 'AdminController');
+Route::resource('users', 'UserController');
+Route::resource('roles', 'RoleController');
+Route::resource('times', 'TimeController');

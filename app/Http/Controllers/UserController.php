@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -14,7 +15,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $allUsers=User::all();
+        return view('admin.users')->with([
+            'allUsers'=>$allUsers
+        ]);
     }
 
     /**
@@ -22,9 +26,21 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $success=User::create([
+            'username'=>$request->username,
+            'password'=>Hash::make($request->password),
+        ]);
+
+        $allUsers=User::all();
+        // Session::flash('message', 'This is a message!'); 
+        if($success){
+            return view('admin.users')->with([
+              'allUsers'=>$allUsers,
+            ])->render();
+        }
+        return response()->json(['message'=>'an error occured']);
     }
 
     /**

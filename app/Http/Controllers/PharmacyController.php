@@ -7,14 +7,17 @@ use Illuminate\Http\Request;
 
 class PharmacyController extends Controller
 {
-    /**
+ /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $allPharmacies=Pharmacy::all();
+        return view('admin.pharmacies')->with([
+            'allPharmacies'=>$allPharmacies
+        ]);
     }
 
     /**
@@ -22,9 +25,20 @@ class PharmacyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $success=Pharmacy::create([
+            'name'=>$request->name,
+        ]);
+
+        $allPharmacies=Pharmacy::all();
+        // Session::flash('message', 'This is a message!'); 
+        if($success){
+            return view('admin.pharmacies')->with([
+              'allPharmacies'=>$allPharmacies,
+            ])->render();
+        }
+        return response()->json(['message'=>'an error occured']);
     }
 
     /**

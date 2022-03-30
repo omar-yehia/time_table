@@ -18,5 +18,6 @@ Route::get('/', function () {
 
 Route::resource('admins', 'AdminController');
 Route::resource('users', 'UserController');
+Route::resource('pharmacies', 'PharmacyController');
 Route::resource('roles', 'RoleController');
 Route::resource('times', 'TimeController');

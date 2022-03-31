@@ -14,6 +14,7 @@
 Route::get('/','AdminController@login_page');
 Route::get('/login','AdminController@login_page')->name('login_page');
 Route::post('/login_action','AdminController@login')->name('login');
+Route::get('/logout','AdminController@logout')->name('logout');
 
  
 Route::POST('/createRowsFromDateRange','TimeController@createRowsFromDateRange')->name('createRowsFromDateRange');

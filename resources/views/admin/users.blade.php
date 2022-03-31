@@ -4,10 +4,10 @@
 @section('body')
 <div id="body" class="container">
 
-@if(Session::has('success'))
-    <p class="alert-success">{{Session::get('success')}}</p>
-@elseif(Session::has('error'))
-    <p class="alert-danger">{{Session::get('error')}}</p>
+@if(session('success'))
+    <p id="success" class="alert alert-success">{{session('success')}}</p>
+@elseif(session('error'))
+    <p id="error" class="alert alert-danger">{{session('error')}}</p>
 @endif
 
 <!-- create user -->
@@ -80,7 +80,15 @@
     });
     
 </script>
-    
+<script>
+    setTimeout(function() {
+      $('#success').fadeOut('slow');
+    }, 2000);
+    setTimeout(function() {
+      $('#error').fadeOut('slow');
+    }, 2000);
+</script>
+
 </div>
 
 @endsection

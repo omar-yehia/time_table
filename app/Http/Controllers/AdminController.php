@@ -6,16 +6,18 @@ use App\Admin;
 use App\User;
 use App\Pharmacy;
 use App\Time;
+use App\Role;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Session;
 
 class AdminController extends Controller
 {
 
     public function logout(){
         Session::flush();
-        return redirect()->route('login');
+        return redirect()->route('login_page');
     }
 
     function login_page(Request $request){
@@ -56,7 +58,12 @@ class AdminController extends Controller
      */
     public function index()
     {
-        //
+        $all_admins=Admin::all();
+        $all_roles=Role::all();
+        return view('admin/admins')->with([
+            'all_admins'=>$all_admins,
+            'all_roles'=>$all_roles,
+        ]);
     }
 
     /**

@@ -5,17 +5,18 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Session;
 
 class UserController extends Controller
 {
 
     public function logout(){
         Session::flush();
-        return redirect()->route('login');
+        return redirect()->route('login_page');
     }
 
     public function home(){
-        if(empty(session('authorized_user'))){logout();}
+        if(empty(session('authorized_user'))){$this->logout();}
         return view('users.home');
     }
     /**
@@ -25,7 +26,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        if(empty(session('authorized_user'))){logout();}
+        if(empty(session('authorized_user'))){$this->logout();}
 
         $allUsers=User::all();
         return view('admin.users')->with([

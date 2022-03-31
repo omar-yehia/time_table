@@ -106,4 +106,35 @@ class TimeController extends Controller
     {
         //
     }
+
+    public function createRowsFromDateRange(Request $request){
+        $allPharmacies=Pharmacy::all();
+        // $allUsers=User::all();
+
+        $start= strtotime($request->start);
+        $end= strtotime($request->end);
+        $datediff = $end - $start;
+        $diff=round($datediff / (60 * 60 * 24));
+
+        $htmlPharmacy="";
+        foreach($allPharmacies as $pharmacy){
+            $htmlPharmacy.='<option value="$pharmacy->id">$pharmacy->name</option>';
+        }
+
+        $html="";
+        for($i=0;$i<$diff;$i++){
+            $currDate=date('d-m-y',$start);
+            $currDay=date('D',$start);
+            $html.=`
+                 <div class="row">
+                    <input class="hidden_user_id" type="hidden" value="">
+                    <div class="col-md-1">$currDate $currDay</div>
+                    <div class="col-md-4"><select name="pharmacy_id">$htmlPharmacy</select></div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4"></div>
+                </div>`;
+        }
+        
+        
+    }
 }

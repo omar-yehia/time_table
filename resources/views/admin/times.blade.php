@@ -12,12 +12,18 @@
 
 <!-- create time -->
 
-<select>
+<label for="user">User</label>
+<select id="user" name="user_id">
     @foreach($allUsers as $user)
     <option value="{{$user->id}}">{{$user->name}}</option>
     @endforeach
 </select>
-<input type="text"> </input>
+
+<label for="date">Date</label>
+<input id="date" type="text" name="daterange" value="{{date('d/m/y')}}" />
+
+{{csrf_field()}}
+
 <div class="row">
     <div class="col-md-12">
         <form id="create_form">
@@ -31,6 +37,50 @@
 
 </div>
 
+
+
+<script>
+    function createRow(date,day){
+        var row=`
+        <div class="row">
+            <div class="col-md-1">`+date+`</div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+        </div>
+        <td>
+        </td>
+        `;
+        $('#create_table').append();
+
+    }
+
+$(function() {
+  $('input[name="daterange"]').daterangepicker({
+    opens: 'left'
+  }, function(start, end, label) {
+    $.ajax({
+        url:"{{route('createRowsFromDateRange')}}",
+        type:'POST',
+        data: {'start':start.format('YYYY-MM-DD'), 'end':end.format('YYYY-MM-DD')},
+        success:function(result){
+            $("rows_container").html(result);
+        }
+    });
+    console.log();
+    //   var numberOfDays=end.diff(start, "days");
+    //   for(var i=0;i<numberOfDays;i++){
+    //     createRow();
+    //   }
+    // //   
+    // // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    // console.log();
+    // var start = moment("2013-11-03");
+    // var end = moment("2013-11-04");
+    // end.diff(start, "days")
+  });
+});
+</script>
 
 <script>
     $('#create_form').on('submit',function(e){

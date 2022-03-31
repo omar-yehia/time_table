@@ -34,17 +34,21 @@ class TimeController extends Controller
      */
     public function create(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $user_id=$request->user_id;
         $pharmacy_id=$request->pharmacy_id;
-        $day=$request->day;
         $date=$request->date;
+        $day=date('l',strtotime($date));
+        $start_time=date('H:i',strtotime($request->start_time));
+        $end_time=date('H:i',strtotime($request->end_time));
 
         $success=Time::create([
             'user_id'=>$user_id,
             'pharmacy_id'=>$pharmacy_id,
             'day'=>$day,
             'date'=>$date,
+            'start_time'=>$start_time,
+            'end_time'=>$end_time,
         ]);
 
         if($success) return 1;
@@ -123,19 +127,20 @@ class TimeController extends Controller
         }
 
         $html="";
-        for($i=0;$i<$diff;$i++){
-            $currDate=date('d-m-y',$start);
-            $currDay=date('l',$start);
+        for($i=0;$i<=$diff;$i++){
+            $currDate=date('d-m-y',strtotime($request->start." +$i day"));
+            $currDay=date('l',strtotime($currDate));
             $html.="
                 <form class='create_form'>
                  <div class='row'>
-                    <input class='hidden_user_id' name='user_id' type='hidden' value=''>
+                    <input type='hidden' name='date' value='".$currDate."'>
                     <div class='col-md-2'>".$currDate.' '.$currDay."</div>
-                    <div class='col-md-4'><select name='pharmacy_id'>".$htmlPharmacy."</select></div>
-                    <div class='col-md-3'><input type='time' name='start_time' required></div>
-                    <div class='col-md-3'><input type='time' name='end_time' required></div>
+                    <div class='col-md-2'><select name='pharmacy_id'>".$htmlPharmacy."</select></div>
+                    <div class='col-md-2'><input type='time' name='start_time' required></div>
+                    <div class='col-md-2'><input type='time' name='end_time' required></div>
+                    <div class='col-md-2'><button>Create</button></div>
                 </div>
-                <button>Create</button>
+                
                 </form>
                 ";
         }

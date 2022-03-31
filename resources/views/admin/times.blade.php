@@ -48,15 +48,19 @@
 
 $(function() {
   $('input[name="daterange"]').daterangepicker({
-    opens: 'left'
+    opens: 'left',
+    "locale": {
+        "format": "DD/MM/YYYY",
+    }
   }, function(start, end, label) {
     $.ajax({
         url:"{{route('createRowsFromDateRange')}}",
         type:'POST',
         data: {'_token':"{{csrf_token()}}",'start':start.format('YYYY-MM-DD'), 'end':end.format('YYYY-MM-DD')},
         success:function(result){
-            console.log(result);
+            // console.log(result);
             $("#rows_container").html(result);
+            attachEvenetListener();
         }
     }); 
     //   var numberOfDays=end.diff(start, "days");
@@ -67,19 +71,27 @@ $(function() {
 </script>
 
 <script>
-    $('#create_form').on('submit',function(e){
-        e.preventDefault();
-        var user_id=$('#user_id').val();
-        console.lo
-        $.ajax({
-            url:"{{route('times.create')}}",
-            type:'GET',
-            data:$(this).serialize() + "&user_id=" + user_id,
-            success:function(result){
-                // $("body").html(result);
-            }
+    function attachEvenetListener(){
+        $('.create_form').on('submit',function(e){
+            e.preventDefault();
+            var thisForm=$(this);
+            var user_id=$('#user_id').val();
+            console.log(user_id);
+            $.ajax({
+                url:"{{route('times.create')}}",
+                type:'GET',
+                data:$(this).serialize() + "&user_id=" + user_id,
+                success:function(result){
+                    console.log(result);
+                    if(result==1){
+                        thisForm.remove();
+                    }
+                    // $("body").html(result);
+                }
+            });
         });
-    });
+    }
+
 </script>
     
 </div>

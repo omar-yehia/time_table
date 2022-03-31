@@ -18,6 +18,17 @@ class TimeController extends Controller
     public function index()
     {
         $allTimes=Time::all();
+
+        foreach($allTimes as $time){
+            $user_name=User::find($time->user_id);
+            $time->user=$user_name->name;
+            $pharmacy_name=Pharmacy::find($time->pharmacy_id);
+            $time->pharmacy=$pharmacy_name->name;
+            $time->day=date('l',strtotime($time->day));
+            $time->start_time=date('H:i A',strtotime($time->start_time));
+            $time->end_time=date('H:i A',strtotime($time->end_time));
+        }
+
         $allPharmacies=Pharmacy::all();
         $allUsers=User::all();
         return view('admin.times')->with([
@@ -128,8 +139,8 @@ class TimeController extends Controller
 
         $html="";
         for($i=0;$i<=$diff;$i++){
-            $currDate=date('d-m-y',strtotime($request->start." +$i day"));
-            $currDay=date('l',strtotime($currDate));
+            $currDate=date('d-m-y',strtotime($request->start." +$i days"));
+            $currDay=date('l',strtotime($request->start." +$i days"));
             $html.="
                 <form class='create_form'>
                  <div class='row'>

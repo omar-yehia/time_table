@@ -24,29 +24,29 @@
 
 </div>
 
-<!-- list pharmacies -->
-<div class="text-success">
+    <!-- list pharmacies -->
+    <div class="text-success">
 
-    <table>
-    <thead>
-    <tr>
-    <th scope="col">#</th>
-    <th scope="col">name</th>
-    <th scope="col">actions</th>
-    </tr>
-</thead>
-<tbody>
-    @foreach($allPharmacies as $pharmacy)
-    <tr>
-    <th scope="row">{{1+$loop->index}}</th>
-        <td>{{$pharmacy->name}}</td>
-        <td>
-            <button class="edit btn btn-info">edit</button>
-            <button class="view btn btn-info">view time table</button>
-        </td>
-    </tr>
-    @endforeach
-</tbody>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">name</th>
+        <th scope="col">actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($allPharmacies as $pharmacy)
+        <tr>
+        <th scope="row">{{1+$loop->index}}</th>
+            <td>{{$pharmacy->name}}</td>
+            <td>
+                <button class="edit btn btn-info">edit</button>
+                <button class="view btn btn-info">view time table</button>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
     </table>
 </div>
 <script>
@@ -57,7 +57,7 @@
             type:'GET',
             data:$(this).serialize(),
             success:function(result){
-                $("body").html(result);
+                $("#admin_app_container").html(result);
             }
         });
     });

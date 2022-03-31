@@ -3,10 +3,52 @@
 namespace App\Http\Controllers;
 
 use App\Admin;
+use App\User;
+use App\Pharmacy;
+use App\Time;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+
+    public function logout(){
+        Session::flush();
+        return redirect()->route('login');
+    }
+
+    function login_page(Request $request){
+        return view('admin.login');
+    }
+
+    function login(Request $request){
+        $accounttype=$request->accounttype;
+        $email=$request->email;
+        if($accounttype=='user'){
+            $user=User::where('email',$email)->first();
+            if(!$user){return redirect()->back()->with('error','invalid data');}
+            
+            $password=Hash::check($request->password,$user->password);
+            if(!$password){return redirect()->back()->with('error','invalid data');}    
+            session()->forget('authorized_user');
+            session()->put('authorized_user',$user->id);
+
+            return redirect()->route('home');
+        }elseif($accounttype=='admin'){
+            $admin=Admin::where('email',$email)->first();
+            if(!$admin){return redirect()->back()->with('error','invalid data');}
+
+            $password=Hash::check($request->password,$admin->password);
+            if(!$password){return redirect()->back()->with('error','invalid data');}    
+            session()->forget('authorized_admin');
+            session()->put('authorized_admin',$admin->id);
+
+            return redirect()->route('dashboard');
+        }
+
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -82,4 +124,22 @@ class AdminController extends Controller
     {
         //
     }
+
+    public function dashboard()
+    {
+        $number_of_users=User::count();
+        $number_of_pharmacies=Pharmacy::count();
+        $number_of_admins=Admin::count();
+        $number_of_times=Time::count();
+
+        return view('admin.dashboard')->with([
+            'number_of_users'=>$number_of_users,
+            'number_of_pharmacies'=>$number_of_pharmacies,
+            'number_of_admins'=>$number_of_admins,
+            'number_of_times'=>$number_of_times,
+        ]);
+
+
+    }
+    
 }

@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    public function logout(){
+        Session::flush();
+        return redirect()->route('login');
+    }
+
+    public function home(){
+        if(empty(session('authorized_user'))){logout();}
+        return view('users.home');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +25,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        if(empty(session('authorized_user'))){logout();}
+
         $allUsers=User::all();
         return view('admin.users')->with([
             'allUsers'=>$allUsers
@@ -28,6 +40,7 @@ class UserController extends Controller
      */
     public function create(Request $request)
     {
+        if(empty(session('authorized_user'))){return 0;}
         $success=User::create([
             'name'=>$request->name,
             'email'=>$request->email,

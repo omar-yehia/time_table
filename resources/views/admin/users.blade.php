@@ -28,32 +28,32 @@
 </div>
 
 <!-- list users -->
-<div class="text-success">
 
-    <table>
+<table class="table table-striped">
     <thead>
-    <tr>
-    <th scope="col">#</th>
-    <th scope="col">name</th>
-    <th scope="col">email</th>
-    <th scope="col">actions</th>
-    </tr>
-</thead>
-<tbody>
-    @foreach($allUsers as $user)
-    <tr>
-        <th scope="row">{{1+$loop->index}}</th>
-        <td>{{$user->name}}</td>
-        <td>{{$user->email}}</td>
-        <td>
-            <button class="edit btn btn-info">edit</button>
-            <button class="view btn btn-info">view time table</button>
-        </td>
-    </tr>
-    @endforeach
-</tbody>
-    </table>
-</div>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">name</th>
+        <th scope="col">email</th>
+        <th scope="col">actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($allUsers as $user)
+        <tr>
+            <th scope="row">{{1+$loop->index}}</th>
+            <td>{{$user->name}}</td>
+            <td>{{$user->email}}</td>
+            <td>
+                <button class="edit btn btn-info">edit</button>
+                <button class="view btn btn-info">view time table</button>
+                <button class="delete btn btn-danger">delete</button>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
 <script>
     $('#create_form').on('submit',function(e){
         e.preventDefault();
@@ -62,10 +62,23 @@
             type:'GET',
             data:$(this).serialize(),
             success:function(result){
+                $("#admin_app_container").html(result);
+            }
+        });
+    });
+
+    $('.view').on('submit',function(e){
+        e.preventDefault();
+        $.ajax({
+            url:"{ {route('viewUserTimeTable')}}",
+            type:'GET',
+            data:$(this).serialize(),
+            success:function(result){
                 $("body").html(result);
             }
         });
     });
+    
 </script>
     
 </div>

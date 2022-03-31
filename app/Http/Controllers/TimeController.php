@@ -34,6 +34,7 @@ class TimeController extends Controller
      */
     public function create(Request $request)
     {
+        dd($request->all());
         $user_id=$request->user_id;
         $pharmacy_id=$request->pharmacy_id;
         $day=$request->day;
@@ -114,26 +115,31 @@ class TimeController extends Controller
         $start= strtotime($request->start);
         $end= strtotime($request->end);
         $datediff = $end - $start;
-        $diff=round($datediff / (60 * 60 * 24));
+        $diff=(int) round($datediff / (60 * 60 * 24));
 
         $htmlPharmacy="";
         foreach($allPharmacies as $pharmacy){
-            $htmlPharmacy.='<option value="$pharmacy->id">$pharmacy->name</option>';
+            $htmlPharmacy.="<option value='$pharmacy->id'>$pharmacy->name</option>";
         }
 
         $html="";
         for($i=0;$i<$diff;$i++){
             $currDate=date('d-m-y',$start);
-            $currDay=date('D',$start);
-            $html.=`
-                 <div class="row">
-                    <input class="hidden_user_id" type="hidden" value="">
-                    <div class="col-md-1">$currDate $currDay</div>
-                    <div class="col-md-4"><select name="pharmacy_id">$htmlPharmacy</select></div>
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4"></div>
-                </div>`;
+            $currDay=date('l',$start);
+            $html.="
+                <form class='create_form'>
+                 <div class='row'>
+                    <input class='hidden_user_id' name='user_id' type='hidden' value=''>
+                    <div class='col-md-2'>".$currDate.' '.$currDay."</div>
+                    <div class='col-md-4'><select name='pharmacy_id'>".$htmlPharmacy."</select></div>
+                    <div class='col-md-3'><input type='time' name='start_time' required></div>
+                    <div class='col-md-3'><input type='time' name='end_time' required></div>
+                </div>
+                <button>Create</button>
+                </form>
+                ";
         }
+        return $html;
         
         
     }

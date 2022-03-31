@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
  
-Route::get('/createRowsFromDateRange','TimeController@createRowsFromDateRange')->name('createRowsFromDateRange');
+Route::POST('/createRowsFromDateRange','TimeController@createRowsFromDateRange')->name('createRowsFromDateRange');
 
 
 

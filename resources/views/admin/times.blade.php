@@ -12,8 +12,8 @@
 
 <!-- create time -->
 
-<label for="user">User</label>
-<select id="user" name="user_id">
+<label for="user_id">User</label>
+<select id="user_id" name="user_id">
     @foreach($allUsers as $user)
     <option value="{{$user->id}}">{{$user->name}}</option>
     @endforeach
@@ -22,7 +22,11 @@
 <label for="date">Date</label>
 <input id="date" type="text" name="daterange" value="{{date('d/m/y')}}" />
 
-{{csrf_field()}}
+<div id="rows_container">
+    
+</div>
+
+<!-- {{csrf_field()}} -->
 
 <div class="row">
     <div class="col-md-12">
@@ -40,20 +44,7 @@
 
 
 <script>
-    function createRow(date,day){
-        var row=`
-        <div class="row">
-            <div class="col-md-1">`+date+`</div>
-            <div class="col-md-4"></div>
-            <div class="col-md-4"></div>
-            <div class="col-md-4"></div>
-        </div>
-        <td>
-        </td>
-        `;
-        $('#create_table').append();
-
-    }
+ 
 
 $(function() {
   $('input[name="daterange"]').daterangepicker({
@@ -62,22 +53,15 @@ $(function() {
     $.ajax({
         url:"{{route('createRowsFromDateRange')}}",
         type:'POST',
-        data: {'start':start.format('YYYY-MM-DD'), 'end':end.format('YYYY-MM-DD')},
+        data: {'_token':"{{csrf_token()}}",'start':start.format('YYYY-MM-DD'), 'end':end.format('YYYY-MM-DD')},
         success:function(result){
-            $("rows_container").html(result);
+            console.log(result);
+            $("#rows_container").html(result);
         }
-    });
-    console.log();
+    }); 
     //   var numberOfDays=end.diff(start, "days");
-    //   for(var i=0;i<numberOfDays;i++){
-    //     createRow();
-    //   }
-    // //   
-    // // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-    // console.log();
-    // var start = moment("2013-11-03");
-    // var end = moment("2013-11-04");
-    // end.diff(start, "days")
+    // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+ 
   });
 });
 </script>
@@ -85,12 +69,14 @@ $(function() {
 <script>
     $('#create_form').on('submit',function(e){
         e.preventDefault();
+        var user_id=$('#user_id').val();
+        console.lo
         $.ajax({
-            url:"{{route('pharmacies.create')}}",
+            url:"{{route('times.create')}}",
             type:'GET',
-            data:$(this).serialize(),
+            data:$(this).serialize() + "&user_id=" + user_id,
             success:function(result){
-                $("body").html(result);
+                // $("body").html(result);
             }
         });
     });

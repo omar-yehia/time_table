@@ -22,9 +22,9 @@
   </div>
   <div class="form-group">
   <label for="user">User</label>
-  <input id="user" type="radio" name="accounttype" value="user" checked>
+  <input id="user" class="form-check-input" type="radio" name="accounttype" value="user" checked>
   <label for="admin">Admin</label>
-  <input id="admin" type="radio" name="accounttype" value="admin">
+  <input id="admin" class="form-check-input" type="radio" name="accounttype" value="admin">
 </div>
   <button type="submit" class="btn btn-primary w-50 mt-1">Submit</button>
 </form>

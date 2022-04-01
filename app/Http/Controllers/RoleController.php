@@ -14,7 +14,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        $all_roles=Role::all();
+        return view('admin.roles')->with(['all_roles'=>$all_roles]);
     }
 
     /**
@@ -22,10 +23,23 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        // dd($request->all());
+        $success=Role::create([
+            'name'=>$request->name,
+            'description'=>$request->description,
+        ]);
+
+        if($success){
+            $all_roles=Role::all();
+            return ['return'=>1,'html'=>view('admin.roles')->with(['all_roles'=>$all_roles])->render()];
+        }
+        else{
+            return ['return'=>0,'html'=>""];
+        }
     }
+
 
     /**
      * Store a newly created resource in storage.

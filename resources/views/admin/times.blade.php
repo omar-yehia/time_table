@@ -1,7 +1,4 @@
-@extends('layout')
-@section('title','Times')
 
-@section('body')
 <div id="body" class="container">
 
 @if(session('success'))
@@ -125,5 +122,3 @@ $(function() {
 </script>
 
 </div>
-
-@endsection

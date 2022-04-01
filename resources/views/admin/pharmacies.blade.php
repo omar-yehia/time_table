@@ -1,7 +1,4 @@
-@extends('layout')
-@section('title','Pharmacies')
 
-@section('body')
 <div id="body" class="container">
 
 @if(session('success'))
@@ -57,6 +54,8 @@
             type:'GET',
             data:$(this).serialize(),
             success:function(result){
+                var number=$('#number_of_pharmacies').data('number');
+                $('#number_of_pharmacies').text(++number);
                 $("#admin_app_container").html(result);
             }
         });
@@ -72,5 +71,3 @@
 </script>
 
 </div>
-
-@endsection

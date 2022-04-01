@@ -1,7 +1,4 @@
-@extends('layout')
-@section('title','Users')
 
-@section('body')
 <div id="body" class="container">
 
 @if(session('success'))
@@ -62,10 +59,15 @@
             type:'GET',
             data:$(this).serialize(),
             success:function(result){
-                $("#admin_app_container").html(result);
+                if(result.return==1){
+                    var number=$('#number_of_users').data('number');
+                    $('#number_of_users').text(++number);
+                    $("#admin_app_container").html(result.html);
+                }
             }
         });
     });
+</script>
 
     $('.view').on('submit',function(e){
         e.preventDefault();
@@ -90,5 +92,3 @@
 </script>
 
 </div>
-
-@endsection

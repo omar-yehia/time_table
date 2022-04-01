@@ -71,9 +71,9 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        dd($request->all());
     }
 
     /**
@@ -134,16 +134,19 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        if(empty(session('authorized_admin'))){ return $this->logout();}
         $number_of_users=User::count();
         $number_of_pharmacies=Pharmacy::count();
         $number_of_admins=Admin::count();
         $number_of_times=Time::count();
-
+        $number_of_roles=Role::count();
+        
         return view('admin.dashboard')->with([
             'number_of_users'=>$number_of_users,
             'number_of_pharmacies'=>$number_of_pharmacies,
             'number_of_admins'=>$number_of_admins,
             'number_of_times'=>$number_of_times,
+            'number_of_roles'=>$number_of_roles,
         ]);
 
 

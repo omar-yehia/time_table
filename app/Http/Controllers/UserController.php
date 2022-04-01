@@ -16,7 +16,7 @@ class UserController extends Controller
     }
 
     public function home(){
-        if(empty(session('authorized_user'))){$this->logout();}
+        if(empty(session('authorized_user'))){return $this->logout();}
         return view('users.home');
     }
     /**
@@ -26,7 +26,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        if(empty(session('authorized_user'))){$this->logout();}
+        if(empty(session('authorized_admin'))){return $this->logout();}
 
         $allUsers=User::all();
         return view('admin.users')->with([
@@ -41,21 +41,20 @@ class UserController extends Controller
      */
     public function create(Request $request)
     {
-        if(empty(session('authorized_user'))){return 0;}
+        if(empty(session('authorized_admin'))){return ['return'=>0,'html'=>""];}
         $success=User::create([
             'name'=>$request->name,
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
         ]);
 
-        $allUsers=User::all();
-        // Session::flash('message', 'This is a message!'); 
         if($success){
-            return view('admin.users')->with([
-              'allUsers'=>$allUsers,
-            ])->render();
+            $allUsers=User::all();
+            return ['return'=>1,'html'=>view('admin.users')->with(['allUsers'=>$allUsers])->render()];
         }
-        return response()->json(['message'=>'an error occured']);
+        else{
+            return ['return'=>0,'html'=>""];
+        }
     }
 
     /**

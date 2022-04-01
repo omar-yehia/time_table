@@ -20,7 +20,9 @@ Route::get('/logout','AdminController@logout')->name('logout');
 Route::POST('/createRowsFromDateRange','TimeController@createRowsFromDateRange')->name('createRowsFromDateRange');
 
 Route::get('/dashboard','AdminController@dashboard')->name('dashboard');
-Route::get('/home','UserController@home')->name('home');
+Route::match(['GET','POST'],'/home','UserController@home')->name('home');
+
+Route::get('/view_user_times','TimeController@view_user_times')->name('view_user_times');
 
 Route::resource('admins', 'AdminController');
 Route::resource('users', 'UserController');

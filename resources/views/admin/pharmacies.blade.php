@@ -1,11 +1,7 @@
 
 <div id="body" class="container">
 
-@if(session('success'))
-    <p id="success" class="alert alert-success">{{session('success')}}</p>
-@elseif(session('error'))
-    <p id="error" class="alert alert-danger">{{session('error')}}</p>
-@endif
+ 
 
 <!-- create pharmacy -->
 <div class="row">

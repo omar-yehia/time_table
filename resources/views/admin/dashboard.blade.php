@@ -4,6 +4,7 @@
 @section('body')
 <div id="body" class="container">
  
+<div id="error" class="alert alert-danger" style="display:none;"></div>
 <!-- stats -->
 <div class="row">
     <div class="col-md-12 p-2">

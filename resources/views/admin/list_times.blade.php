@@ -1,5 +1,10 @@
 
 <h3>List Of Times</h3>
+@isset($username)
+<h4>for: {{$username}}</h4>
+@endisset
+
+@if(count($allTimes))
 <!-- times list -->
 <table class="table table-striped">
     <thead>
@@ -11,7 +16,6 @@
         <th scope="col">pharmacy</th>
         <th scope="col">start_time</th>
         <th scope="col">end_time</th>
-
         <th scope="col">actions</th>
     </tr>
     </thead>
@@ -27,11 +31,12 @@
         <td>{{$time->end_time}}</td>
         <td>
             <button class="edit btn btn-info">edit</button>
-            <button class="view btn btn-info">view time table</button>
-            <button class="delete btn btn-info">delete</button>
-
+            <button class="delete btn btn-danger">delete</button>
         </td>
     </tr>
     @endforeach
     </tbody>
 </table>
+@else
+<h2 class="text-warning">No Times found</h2>
+@endif

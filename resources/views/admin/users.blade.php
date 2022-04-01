@@ -1,12 +1,9 @@
 
 <div id="body" class="container">
 
-@if(session('success'))
-    <p id="success" class="alert alert-success">{{session('success')}}</p>
-@elseif(session('error'))
-    <p id="error" class="alert alert-danger">{{session('error')}}</p>
-@endif
+ 
 
+<h3>Create User</h3>
 <!-- create user -->
 <div class="row">
     <div class="col-md-12">
@@ -24,8 +21,10 @@
 
 </div>
 
-<!-- list users -->
+<div class="mt-5" id="list_user_time_table">
+</div>
 
+<h3 class="mt-5">List of users</h3>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -43,7 +42,7 @@
             <td>{{$user->email}}</td>
             <td>
                 <button class="edit btn btn-info">edit</button>
-                <button class="view btn btn-info">view time table</button>
+                <button class="view btn btn-info" data-id="{{$user->id}}">view time table</button>
                 <button class="delete btn btn-danger">delete</button>
             </td>
         </tr>
@@ -68,15 +67,15 @@
         });
     });
 </script>
-
-    $('.view').on('submit',function(e){
-        e.preventDefault();
+<script>
+    $('.view').on('click',function(){
+        var id=$(this).data('id');
         $.ajax({
-            url:"{ {route('viewUserTimeTable')}}",
+            url:"{{route('view_user_times')}}",
             type:'GET',
-            data:$(this).serialize(),
+            data:{id:id},
             success:function(result){
-                $("body").html(result);
+                $("#list_user_time_table").html(result);
             }
         });
     });

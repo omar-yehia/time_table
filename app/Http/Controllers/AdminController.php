@@ -21,6 +21,8 @@ class AdminController extends Controller
     }
 
     function login_page(Request $request){
+        if(session('authorized_admin')){ return redirect()->route('dashboard');}
+        if(session('authorized_user')){ return redirect()->route('home');}
         return view('admin.login');
     }
 
@@ -29,20 +31,20 @@ class AdminController extends Controller
         $email=$request->email;
         if($accounttype=='user'){
             $user=User::where('email',$email)->first();
-            if(!$user){return redirect()->back()->with('error','invalid data');}
+            if(!$user){return redirect()->back()->with('error','Wrong Credentials');}
             
             $password=Hash::check($request->password,$user->password);
-            if(!$password){return redirect()->back()->with('error','invalid data');}    
+            if(!$password){return redirect()->back()->with('error','Wrong Credentials');}    
             session()->forget('authorized_user');
             session()->put('authorized_user',$user->id);
 
             return redirect()->route('home');
         }elseif($accounttype=='admin'){
             $admin=Admin::where('email',$email)->first();
-            if(!$admin){return redirect()->back()->with('error','invalid data');}
+            if(!$admin){return redirect()->back()->with('error','Wrong Credentials');}
 
             $password=Hash::check($request->password,$admin->password);
-            if(!$password){return redirect()->back()->with('error','invalid data');}    
+            if(!$password){return redirect()->back()->with('error','Wrong Credentials');}    
             session()->forget('authorized_admin');
             session()->put('authorized_admin',$admin->id);
 
@@ -74,6 +76,7 @@ class AdminController extends Controller
     public function create(Request $request)
     {
         dd($request->all());
+        // roles
     }
 
     /**

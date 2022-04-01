@@ -62,8 +62,26 @@ class TimeController extends Controller
             'end_time'=>$end_time,
         ]);
 
-        if($success) return 1;
-        else return 0;
+        if($success){
+            $allTimes=Time::all();
+
+            foreach($allTimes as $time){
+                $user_name=User::find($time->user_id);
+                $time->user=$user_name->name;
+                $pharmacy_name=Pharmacy::find($time->pharmacy_id);
+                $time->pharmacy=$pharmacy_name->name;
+                $time->day=date('l',strtotime($time->day));
+                $time->start_time=date('H:i A',strtotime($time->start_time));
+                $time->end_time=date('H:i A',strtotime($time->end_time));
+            }
+
+            return ['return'=>1,'html'=>view('admin.list_times')->with([
+                'allTimes'=>$allTimes,
+                ])->render()];
+        }
+        else{
+            return ['return'=>0,'html'=>""];
+        }
     }
 
 

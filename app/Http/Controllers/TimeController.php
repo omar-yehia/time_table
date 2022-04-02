@@ -17,7 +17,7 @@ class TimeController extends Controller
      */
     public function index()
     {
-        $allTimes=Time::all();
+        $allTimes=Time::orderBy('date')->get();
 
         foreach($allTimes as $time){
             $user_name=User::find($time->user_id);
@@ -26,8 +26,8 @@ class TimeController extends Controller
             $time->pharmacy=$pharmacy_name->name;
             $time->day=date('l',strtotime($time->day));
             $time->date=date('d-m-Y',strtotime($time->date));
-            $time->start_time=date('H:i A',strtotime($time->start_time));
-            $time->end_time=date('H:i A',strtotime($time->end_time));
+            $time->start_time=date('h:i A',strtotime($time->start_time));
+            $time->end_time=date('h:i A',strtotime($time->end_time));
         }
 
         $allPharmacies=Pharmacy::all();
@@ -51,6 +51,64 @@ class TimeController extends Controller
         if($col_1||$col_2||$col_3) return true;
         else return false;
     }
+
+    // take user_id or pharmacy id or return all times
+    public function getListOfTimes(Request $request){
+        // dd($request->all());
+
+        //user seeing his times
+        $user_id=session('authorized_user');
+        
+        if($user_id){
+            $times=Time::where('user_id',$user_id);
+        }else{
+            $allowed_admin=session('authorized_admin') && in_array('times',session('admin_permissions'));
+            if(!$allowed_admin){return ['return'=>0,'html'=>''];}
+    
+            //admin seeing pharmacy's times
+            $pharmacy_id=$request->pharmacy_id;
+            if($pharmacy_id) $times=Time::where('pharmacy_id',$pharmacy_id);
+            else{
+                //admin seeing all times
+                $times=Time::query();
+            }
+        }
+
+        $pharmacy_name=$request->pharmacy_name;
+        $daterange=explode(' - ',$request->daterange);
+        $start_date=count($daterange)>0?date('Y-m-d',strtotime($daterange[0])):'';
+        $end_date=count($daterange)>1?date('Y-m-d',strtotime($daterange[1])):'';
+
+        if($pharmacy_name){
+            $pharmacies=Pharmacy::where('name','LIKE',"%$pharmacy_name%")->get();
+            $pharmacies_ids=[];
+            if($pharmacies){ $pharmacies_ids=$pharmacies->pluck('id')->toArray();}
+
+            $times->whereIn('pharmacy_id',$pharmacies_ids);
+        }
+        if($start_date && $end_date){
+            $times->whereBetween('date',[$start_date,$end_date]);
+        }
+        $times=$times->orderBy('date')->get();
+
+        foreach($times as $time){
+            $user=User::find($time->user_id);
+            $time->user=$user->name;
+            $pharmacy_name=Pharmacy::find($time->pharmacy_id);
+            $time->pharmacy=$pharmacy_name->name;
+            $time->day=date('l',strtotime($time->day));
+            $time->date=date('d-m-Y',strtotime($time->date));
+            $time->start_time=date('h:i A',strtotime($time->start_time));
+            $time->end_time=date('h:i A',strtotime($time->end_time));
+        }
+
+        $html_list_times=view('admin.list_times')->with([
+            'times'=>$times,
+            ])->render();
+
+        return ['return'=>1,'html_list_times'=>$html_list_times];
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -58,9 +116,13 @@ class TimeController extends Controller
      */
     public function create(Request $request)
     {
-        // dd($request->all());
-        $single_user_data=$request->single_user_data?1:0;
-        $user_id=$request->user_id;
+        $valid_admin=session('authorized_admin') && in_array('users',session('admin_permissions'));
+        $valid_user=session('authorized_user');
+        if($valid_user){ $user_id=$valid_user;}
+        else if($valid_admin){$user_id=$request->user_id;}
+        else{$this->logout();}
+
+        
         $pharmacy_id=$request->pharmacy_id;
         $date=date('Y-m-d',strtotime($request->date));
         $day=date('l',strtotime($date));
@@ -85,29 +147,9 @@ class TimeController extends Controller
             'end_time'=>$end_time,
         ]);
 
-        if($success){
-            if(!$single_user_data){
-                $allTimes=Time::all();
-            }else{
-                $allTimes=Time::where('user_id',$user_id)->get();
-            }
-            foreach($allTimes as $time){
-                $user_name=User::find($time->user_id);
-                $time->user=$user_name->name;
-                $pharmacy_name=Pharmacy::find($time->pharmacy_id);
-                $time->pharmacy=$pharmacy_name->name;
-                $time->day=date('l',strtotime($time->day));
-                $time->date=date('d-m-Y',strtotime($time->date));
-                $time->start_time=date('H:i A',strtotime($time->start_time));
-                $time->end_time=date('H:i A',strtotime($time->end_time));
-            }
-            return ['return'=>1,'html'=>view('admin.list_times')->with([
-                'allTimes'=>$allTimes,
-                ])->render()];
-        }
-        else{
-            return ['return'=>0,'html'=>""];
-        }
+        if($success){ return ['return'=>1,'html'=>""]; }
+        return ['return'=>0,'html'=>""];
+
     }
 
 
@@ -166,6 +208,12 @@ class TimeController extends Controller
     {
         //
     }
+    public function deleteTime(Request $request)
+    {
+        $id=$request->id;
+        $deleted=Time::where('id',$id)->delete();
+        return $deleted;
+    }
 
     public function createRowsFromDateRange(Request $request){
         $allPharmacies=Pharmacy::all();
@@ -214,13 +262,65 @@ class TimeController extends Controller
             $time->pharmacy=$pharmacy_name->name;
             $time->day=date('l',strtotime($time->day));
             $time->date=date('d-m-Y',strtotime($time->date));
-            $time->start_time=date('H:i A',strtotime($time->start_time));
-            $time->end_time=date('H:i A',strtotime($time->end_time));
+            $time->start_time=date('h:i A',strtotime($time->start_time));
+            $time->end_time=date('h:i A',strtotime($time->end_time));
         }
 
+        $times=$times->sortBy('date');
         return view('admin.view_times')->with([
             'times'=>$times,
             'username'=>$user->name
         ])->render();
     }
+
+    public function getEditTimeHTML(Request $request){
+        // dd($request->all());
+        $time=Time::find($request->id);
+        if(!$time){ return ['return'=>0,'html'=>""];}
+        
+        $allPharmacies=Pharmacy::all();
+        $allUsers=[];
+        if(session('authorized_admin')){ $allUsers=User::all();}
+
+        $html=view('edit_time')->with([
+            'time'=>$time,
+            'allPharmacies'=>$allPharmacies,
+            'allUsers'=>$allUsers,
+        ])->render();
+
+        return ['return'=>1,'html'=>$html];
+    }
+    public function updateTime(Request $request){
+        $time_id=$request->time_id;
+        $user_id=$request->user_id;
+        $pharmacy_id=$request->pharmacy_id;
+        $date=date('Y-m-d',strtotime($request->date));
+        $day=date('l',strtotime($date));
+        $start_time=date('H:i',strtotime($request->start_time));
+        $end_time=date('H:i',strtotime($request->end_time));
+
+        $allUserTimes=Time::where('user_id',$user_id)->whereDate('date',$date)->where('id','!=',$time_id)->get();
+        // dd($allUserTimes);
+        foreach ($allUserTimes as $time) {
+            if($this->check_collision($start_time,$end_time,$time->start_time,$time->end_time)){
+                $starttime=date('h:i A',strtotime($time->start_time));
+                $endtime=date('h:i A',strtotime($time->end_time));
+                return ['return'=>0,'html'=>"a collision occured with $time->date from $starttime to $endtime"];
+            }
+        }
+        
+        $success=Time::where('id',$time_id)->update([
+            'user_id'=>$user_id,
+            'pharmacy_id'=>$pharmacy_id,
+            'day'=>$day,
+            'date'=>$date,
+            'start_time'=>$start_time,
+            'end_time'=>$end_time,
+        ]);
+        
+        return ['return'=>1,'html'=>""];
+
+    }
+    
+
 }

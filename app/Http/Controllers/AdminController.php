@@ -45,6 +45,10 @@ class AdminController extends Controller
 
             $password=Hash::check($request->password,$admin->password);
             if(!$password){return redirect()->back()->with('error','Wrong Credentials');}    
+
+            session()->forget('admin_permissions');
+            session()->put('admin_permissions',explode(',',$admin->roles));
+
             session()->forget('authorized_admin');
             session()->put('authorized_admin',$admin->id);
 

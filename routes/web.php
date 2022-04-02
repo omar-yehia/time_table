@@ -23,6 +23,11 @@ Route::get('/dashboard','AdminController@dashboard')->name('dashboard');
 Route::match(['GET','POST'],'/home','UserController@home')->name('home');
 
 Route::get('/view_user_times','TimeController@view_user_times')->name('view_user_times');
+Route::post('/getListOfTimes','TimeController@getListOfTimes')->name('getListOfTimes');
+
+Route::post('/getEditTimeHTML','TimeController@getEditTimeHTML')->name('getEditTimeHTML');
+Route::post('/updateTime','TimeController@updateTime')->name('updateTime');
+Route::post('/deleteTime','TimeController@deleteTime')->name('deleteTime');
 
 Route::resource('admins', 'AdminController');
 Route::resource('users', 'UserController');

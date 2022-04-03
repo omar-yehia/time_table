@@ -12,13 +12,15 @@ installation steps:
 	> php artisan key:generate
 
 5) then, in the .env file fill in the DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, and DB_PASSWORD
-    > DB_DATABASE=time_table_system
-    > DB_USERNAME={your db username here}
-    > DB_PASSWORD={your db password here}
+    DB_DATABASE=time_table_system
+    DB_USERNAME={your db username here}
+    DB_PASSWORD={your db password here}
 
 6) then run commands:
     > php artisan migrate
+
     > php artisan db:seed
+    
     > php artisan serv
 
 then go to localhost::8000

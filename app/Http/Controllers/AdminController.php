@@ -14,19 +14,13 @@ use Session;
 
 class AdminController extends Controller
 {
-
-    public function logout(){
-        Session::flush();
-        return redirect()->route('login_page');
-    }
-
-    function login_page(Request $request){
+    public function login_page(Request $request){
         if(session('authorized_admin')){ return redirect()->route('dashboard');}
         if(session('authorized_user')){ return redirect()->route('home');}
         return view('admin.login');
     }
 
-    function login(Request $request){
+    public function login(Request $request){
         $accounttype=$request->accounttype;
         $email=$request->email;
         if($accounttype=='user'){
@@ -59,6 +53,9 @@ class AdminController extends Controller
  
     public function index()
     {
+        $valid_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+        
         $all_admins=Admin::all();
         $all_roles=Role::all();
         return view('admin/admins')->with([
@@ -69,6 +66,9 @@ class AdminController extends Controller
  
     public function create(Request $request)
     {
+        $valid_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+
         $data['name']=$request->name;
         $data['email']=$request->email;
         $data['password']=Hash::make($request->password);
@@ -115,17 +115,20 @@ class AdminController extends Controller
     }
     public function editAdmin(Request $request)
     {
-        $id=$request->id;
         $valid_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
         if(!$valid_admin){$this->logout();}
+
+        $id=$request->id;
         $admin=Admin::find($id);
         if(!$admin) return ['return'=>0,''];
         $all_roles=Role::all();
-
         $html=view('admin.edit_admin')->with(['admin'=>$admin,'all_roles'=>$all_roles])->render();
         return ['return'=>1,'html'=>$html];
     }
     public function updateAdmin(Request $request){
+        $valid_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+
         $admin_id=$request->admin_id;
         $data['name']=$request->name;
         $data['email']=$request->email;
@@ -135,11 +138,17 @@ class AdminController extends Controller
         }
         $data['roles']=implode(',',$request->roles);
         
+        session()->forget('admin_permissions');
+        session()->put('admin_permissions',$request->roles);
+
         $success=Admin::where('id',$admin_id)->update($data);
         return ['return'=>1,'html'=>""];
     }
     public function deleteAdmin(Request $request)
     {
+        $valid_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+
         $id=$request->id;
         $admin=Admin::find($id);
         if(!$admin) return ['return'=>0,'html'=>"couldn't delete"];

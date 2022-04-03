@@ -30,7 +30,7 @@
         <div class='col-md-2'>
             <input type='time' name='end_time' value="{{$time->end_time}}" required>
         </div>
-        <div class='col-md-2'><button>Update</button></div>
+        <div class='col-md-2'><button class="btn btn-success">Update</button></div>
     </div>
 
 </form>

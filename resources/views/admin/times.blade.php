@@ -1,4 +1,5 @@
-
+@php $permissions=session('admin_permissions') @endphp
+@if(in_array('times',$permissions))
 <div id="body" class="container">
 
 <!-- create time -->
@@ -109,4 +110,4 @@
  
  
 </div>
-
+@endif

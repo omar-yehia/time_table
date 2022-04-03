@@ -28,6 +28,10 @@ class RoleSeeder extends Seeder
                 'name' => "times",
                 'description' => "create,view,edit and delete times"
             ],
+            [
+                'name' => "roles",
+                'description' => "create,view,edit and delete roles"
+            ],
             
         ];
         DB::table('roles')->insert($roles);

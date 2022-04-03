@@ -1,3 +1,5 @@
+@php $permissions=session('admin_permissions') @endphp
+@if(in_array('roles',$permissions))
 <div id="body" class="container">
 
 <h3>Create Role</h3>
@@ -64,3 +66,4 @@ $('.select2').select2();
 </script>
     
 </div>
+@endif

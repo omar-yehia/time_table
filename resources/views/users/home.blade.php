@@ -4,6 +4,17 @@
 @section('body')
 <div id="body" class="container">
 
+
+
+<!-- create time -->
+<h3 class="mt-3">Create Time</h3>
+<input type="hidden" value="{{$user->id}}">
+<label for="create_daterange">Date</label>
+<input id="create_daterange" type="text" name="create_daterange" value="{{date('Y-m-d')}}" />
+
+<div id="rows_container">
+</div>
+
 <!-- search in times -->
 <h3 class="mt-3">Search</h3>
 <form id="search_form">
@@ -17,14 +28,6 @@
 
 <div id="error" class="alert alert-danger" style="display:none;"></div>
 
-<!-- create time -->
-<h3 class="mt-3">Create Time</h3>
-<input type="hidden" value="{{$user->id}}">
-<label for="create_daterange">Date</label>
-<input id="create_daterange" type="text" name="create_daterange" value="{{date('Y-m-d')}}" />
-
-<div id="rows_container">
-</div>
 
 <!-- list times -->
 <div id="list_times" class="mt-3"> 
@@ -34,6 +37,18 @@
 
 
 <script>
+
+
+    function scrollToElement(element_id){
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $("#"+element_id).offset().top
+        }, 200);
+    }
+
+    function renderStats(){
+        return 1;
+    }
+    
     function showError(message){
         $('#error').html(message);
         $("#error").show();
@@ -47,16 +62,16 @@
 
     }
 
-    function renderTimeList(){
+    function renderTimeList(owner_user_id=0,owner_pharmacy_id=0){
         var daterange=$('#search_date').val();
         var pharmacy_name=$('#pharmacy_name').val();
         $.ajax({
             url:"{{route('getListOfTimes')}}",
             type:'POST',
-            data: {'_token':"{{csrf_token()}}",'pharmacy_name':pharmacy_name,'daterange':daterange},
+            data: {'_token':"{{csrf_token()}}",'pharmacy_name':pharmacy_name,'daterange':daterange,'user_id':{{$user->id}}},
             success:function(result){
                 if(result.return==1){
-                    $("#list_times").html(result.html_list_times);
+                    $("#list_times").html(result.html);
                 }
             }
         });  

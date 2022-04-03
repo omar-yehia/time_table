@@ -29,7 +29,7 @@
     $('.view').on('click',function(){
         var id=$(this).data('id');
         renderSearchTime();
-        renderTimeList(id);
+        renderTimeList(id,0);
     });
     $('.delete').on('click',function(){
         var id=$(this).data('id');

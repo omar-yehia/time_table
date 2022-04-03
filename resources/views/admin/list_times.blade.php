@@ -15,6 +15,8 @@
 <div id="time_list_table">
 <!-- times list -->
 <table class="table table-striped">
+        <input type="hidden" id="owner_user_id" name="owner_user_id" value="{{$owner_user_id}}">
+        <input type="hidden" id="owner_pharmacy_id" name="owner_pharmacy_id" value="{{$owner_pharmacy_id}}">
     <thead>
     <tr>
         <th scope="col">#</th>
@@ -56,12 +58,14 @@
 <script>
     $('.delete_time_btn').on('click',function(){
         var id=$(this).data('id');
+        var owner_user_id=$('#owner_user_id').val();
+        var owner_pharmacy_id=$('#owner_pharmacy_id').val();
         $.ajax({
             url:"{{route('deleteTime')}}",
             type:'post',
             data: {'_token':"{{csrf_token()}}",'id':id},
             success:function(result){
-                renderTimeList();
+                renderTimeList(owner_user_id,owner_pharmacy_id);
                 renderStats();
             }
         });
@@ -86,7 +90,10 @@
         //submit edit time form
         $('#edit_time_form').on('submit',function(e){
             e.preventDefault();
+
             var thisForm=$(this);
+            var owner_user_id=$('#owner_user_id').val();
+            var owner_pharmacy_id=$('#owner_pharmacy_id').val();
             $.ajax({
                 url:"{{route('updateTime')}}",
                 type:'POST',
@@ -94,7 +101,7 @@
                 success:function(result){
                     if(result.return==1){
                         thisForm.remove();
-                        renderTimeList();
+                        renderTimeList(owner_user_id,owner_pharmacy_id);
                         renderStats();
                     }else{
                         showError(result.html);

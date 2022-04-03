@@ -13,6 +13,9 @@ class TimeController extends Controller
  
     public function index()
     {
+        $valid_admin=session('authorized_admin') && in_array('times',session('admin_permissions'));
+        if(!$valid_admin){return $this->logout();}
+
         $allTimes=Time::orderBy('date')->get();
 
         foreach($allTimes as $time){
@@ -110,15 +113,21 @@ class TimeController extends Controller
         }
 
         $timeOwner='';
+        $owner_user_id='';
+        $owner_pharmacy_id='';
         if(count($times) && $user_id){
             $timeOwner=$times[0]->user;
+            $owner_user_id=$user_id;
         }elseif(count($times) && $pharmacy_id){
             $timeOwner=$times[0]->pharmacy;
+            $owner_pharmacy_id=$pharmacy_id;
         }
         
         $html=view('admin.list_times')->with([
             'times'=>$times,
             'timeOwner'=>$timeOwner,
+            'owner_user_id'=>$owner_user_id,
+            'owner_pharmacy_id'=>$owner_pharmacy_id,
             ])->render();
 
         return ['return'=>1,'html'=>$html];
@@ -126,18 +135,24 @@ class TimeController extends Controller
  
     public function create(Request $request)
     {
-        $valid_admin=session('authorized_admin') && in_array('users',session('admin_permissions'));
+        // dd($request->all());
+        $needles=['users','pharmacies','times'];
+        $valid_admin=session('authorized_admin') && !empty(array_intersect($needles,session('admin_permissions')));
         $valid_user=session('authorized_user');
         if($valid_user){ $user_id=$valid_user;}
         elseif($valid_admin){$user_id=$request->user_id;}
-        else{$this->logout();}
+        else{return $this->logout();}
 
-        
         $pharmacy_id=$request->pharmacy_id;
         $date=date('Y-m-d',strtotime($request->date));
         $day=date('l',strtotime($date));
-        $start_time=date('H:i',strtotime($request->start_time));
-        $end_time=date('H:i',strtotime($request->end_time));
+
+        $start_timestamp=strtotime($request->start_time);
+        $end_timestamp=strtotime($request->end_time);
+        if($start_timestamp>$end_timestamp){return ['return'=>0,'html'=>"start time must be less than end time"];}
+
+        $start_time=date('H:i',$start_timestamp);
+        $end_time=date('H:i',$end_timestamp);
 
         $allUserTimes=Time::where('user_id',$user_id)->where('date',$date)->get();
         foreach ($allUserTimes as $time) {
@@ -164,6 +179,12 @@ class TimeController extends Controller
 
     public function deleteTime(Request $request)
     {
+        $needles=['users','pharmacies','times'];
+        $valid_admin=session('authorized_admin') && !empty(array_intersect($needles,session('admin_permissions')));
+
+        $valid_user=Time::where(['user_id'=>session('authorized_user'),'id'=>$request->id])->first();
+        if(!$valid_admin && !$valid_user){return $this->logout();}
+
         $id=$request->id;
         $deleted=Time::where('id',$id)->delete();
         return $deleted;
@@ -203,30 +224,6 @@ class TimeController extends Controller
         }
         return $html;        
     }
-    public function view_user_times(Request $request){
-        $user=User::find($request->id);
-        $times=[];
-        if($user){
-            $times=$user->times;
-        }
-
-        foreach($times as $time){
-            $time->user=$user->name;
-            $pharmacy_name=Pharmacy::find($time->pharmacy_id);
-            $time->pharmacy=$pharmacy_name->name;
-            $time->day=date('l',strtotime($time->day));
-            $time->date=date('d-m-Y',strtotime($time->date));
-            $time->start_time=date('h:i A',strtotime($time->start_time));
-            $time->end_time=date('h:i A',strtotime($time->end_time));
-        }
-
-        $times=$times->sortBy('date');
-        return view('admin.view_times')->with([
-            'times'=>$times,
-            'username'=>$user->name
-        ])->render();
-    }
-
     public function editTime(Request $request){
         // dd($request->all());
         $time=Time::find($request->id);
@@ -239,12 +236,14 @@ class TimeController extends Controller
         $html=view('admin.edit_time')->with([
             'time'=>$time,
             'allPharmacies'=>$allPharmacies,
-            'allUsers'=>$allUsers,
+            'allUsers'=>$allUsers
         ])->render();
 
         return ['return'=>1,'html'=>$html];
     }
     public function updateTime(Request $request){
+        // dd($request->all());
+
         $time_id=$request->time_id;
         $user_id=$request->user_id;
         $pharmacy_id=$request->pharmacy_id;

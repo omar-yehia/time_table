@@ -5,10 +5,11 @@
 <div id="body" class="container">
  
 <div id="error" class="alert alert-danger" style="display:none;"></div>
+
 <!-- stats -->
 <div id="stats" class="row">
-
 </div>
+
 <div class="row">
     <div id="admin_app_container" class="col-md-12 p-2">
         Welcome back!

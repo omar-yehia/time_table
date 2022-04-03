@@ -1,4 +1,5 @@
-
+@php $permissions=session('admin_permissions') @endphp
+@if(in_array('pharmacies',$permissions))
 <div id="body" class="container">
 
 <!-- create pharmacy -->
@@ -59,13 +60,13 @@
             }
         });  
     }
-    function renderTimeList(pharmacy_id){
+    function renderTimeList(owner_user_id=0,owner_pharmacy_id=0){
         var daterange=$('#search_date').val();
         var pharmacy_name=$('#pharmacy_name').val();
         $.ajax({
             url:"{{route('getListOfTimes')}}",
             type:'POST',
-            data: {'_token':"{{csrf_token()}}",'pharmacy_name':pharmacy_name,'daterange':daterange,'pharmacy_id':pharmacy_id},
+            data: {'_token':"{{csrf_token()}}",'pharmacy_name':pharmacy_name,'daterange':daterange,'pharmacy_id':owner_pharmacy_id},
             success:function(result){
                 if(result.return==1){
                     $("#list_times").html(result.html);
@@ -93,3 +94,4 @@
 </script>
 
 </div>
+@endif

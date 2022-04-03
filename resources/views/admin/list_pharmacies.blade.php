@@ -28,7 +28,7 @@
     $('.view').on('click',function(){
         var id=$(this).data('id');
         renderSearchTime();
-        renderTimeList(id);
+        renderTimeList(0,id);
     });
     $('.delete').on('click',function(){
         var id=$(this).data('id');

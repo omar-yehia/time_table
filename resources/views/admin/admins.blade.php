@@ -1,3 +1,5 @@
+@php $permissions=session('admin_permissions') @endphp
+@if(in_array('admins',$permissions))
 <div id="body" class="container">
 
 
@@ -70,3 +72,4 @@ $('.select2').select2();
 </script>
     
 </div>
+@endif

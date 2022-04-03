@@ -11,12 +11,6 @@ use Session;
 
 class UserController extends Controller
 {
-
-    public function logout(){
-        Session::flush();
-        return redirect()->route('login_page');
-    }
-
     public function home(Request $request){
         $user_id=session('authorized_user');
         if(empty($user_id)){return $this->logout();}

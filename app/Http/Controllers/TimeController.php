@@ -55,17 +55,28 @@ class TimeController extends Controller
         //user seeing his times
         $user_id=session('authorized_user');
         
+        //user accessing his times
         if($user_id){
             $times=Time::where('user_id',$user_id);
         }else{
-            $allowed_admin=session('authorized_admin') && in_array('times',session('admin_permissions'));
-            if(!$allowed_admin){return ['return'=>0,'html'=>''];}
-    
-            //admin seeing pharmacy's times
+            // admin accessing user's times or pharmacy's times or just any time
+            if(!session('authorized_admin')){return ['return'=>0,'html'=>''];}
+            
+            $times_permission=in_array('times',session('admin_permissions'));
+            $users_permission=in_array('users',session('admin_permissions'));
+            $pharmacies_permissions=in_array('pharmacies',session('admin_permissions'));
+
+            $user_id=$request->user_id;
             $pharmacy_id=$request->pharmacy_id;
-            if($pharmacy_id) $times=Time::where('pharmacy_id',$pharmacy_id);
-            else{
-                //admin seeing all times
+
+            if($user_id){ //admin seeing user's times
+                if(!$times_permission && !$users_permission){return ['return'=>0,'html'=>''];}
+                $times=Time::where('user_id',$user_id);
+            }elseif($pharmacy_id){ //admin seeing pharmacy's times
+                if(!$times_permission && !$pharmacies_permissions){return ['return'=>0,'html'=>''];}
+                $times=Time::where('pharmacy_id',$pharmacy_id);
+            }else{//admin seeing all times
+                if(!$times_permission){return ['return'=>0,'html'=>''];}
                 $times=Time::query();
             }
         }
@@ -98,11 +109,19 @@ class TimeController extends Controller
             $time->end_time=date('h:i A',strtotime($time->end_time));
         }
 
-        $html_list_times=view('admin.list_times')->with([
+        $timeOwner='';
+        if(count($times) && $user_id){
+            $timeOwner=$times[0]->user;
+        }elseif(count($times) && $pharmacy_id){
+            $timeOwner=$times[0]->pharmacy;
+        }
+        
+        $html=view('admin.list_times')->with([
             'times'=>$times,
+            'timeOwner'=>$timeOwner,
             ])->render();
 
-        return ['return'=>1,'html_list_times'=>$html_list_times];
+        return ['return'=>1,'html'=>$html];
     }
  
     public function create(Request $request)
@@ -110,7 +129,7 @@ class TimeController extends Controller
         $valid_admin=session('authorized_admin') && in_array('users',session('admin_permissions'));
         $valid_user=session('authorized_user');
         if($valid_user){ $user_id=$valid_user;}
-        else if($valid_admin){$user_id=$request->user_id;}
+        elseif($valid_admin){$user_id=$request->user_id;}
         else{$this->logout();}
 
         
@@ -256,6 +275,9 @@ class TimeController extends Controller
         return ['return'=>1,'html'=>""];
 
     }
-    
+    public function getSearchTimeForm(){
+        $html=view('admin.search_times')->render();
+        return ['return'=>1,'html'=>$html];
+    }
 
 }

@@ -1,8 +1,9 @@
 
 <h3>List Of Times</h3>
-@isset($username)
-<h4>for: {{$username}}</h4>
-@endisset
+@if(isset($timeOwner) && $timeOwner)
+<h4>for: {{$timeOwner}}</h4>
+@endif
+ 
 
 @if(count($times))
 
@@ -104,4 +105,3 @@
     }
 
 </script>
-

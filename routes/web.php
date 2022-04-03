@@ -51,6 +51,8 @@ Route::get('/editRole','RoleController@editRole')->name('editRole');
 Route::post('/updateRole','RoleController@updateRole')->name('updateRole');
 Route::post('/deleteRole','RoleController@deleteRole')->name('deleteRole');
 
+Route::post('/getSearchTimeForm','TimeController@getSearchTimeForm')->name('getSearchTimeForm');
+
 Route::resource('admins', 'AdminController');
 Route::resource('users', 'UserController');
 Route::resource('pharmacies', 'PharmacyController');

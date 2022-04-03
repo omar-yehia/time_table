@@ -19,7 +19,12 @@
 
 </div>
 
-<div class="mt-5" id="list_user_time_table">
+<!-- search times -->
+<div id="search_times" class="mt-3"> 
+</div>
+
+<!-- view user's time table -->
+<div id="list_times">
 </div>
 
 <!-- edit user -->
@@ -44,6 +49,35 @@
         });  
     }
     renderUserList();
+
+    function renderSearchTime(){
+        $.ajax({
+            url:"{{route('getSearchTimeForm')}}",
+            type:'POST',
+            data: {'_token':"{{csrf_token()}}"},
+            success:function(result){
+                if(result.return==1){
+                    $("#search_times").html(result.html);
+                }
+            }
+        });  
+    }
+    function renderTimeList(user_id){
+        var daterange=$('#search_date').val();
+        var pharmacy_name=$('#pharmacy_name').val();
+        $.ajax({
+            url:"{{route('getListOfTimes')}}",
+            type:'POST',
+            data: {'_token':"{{csrf_token()}}",'pharmacy_name':pharmacy_name,'daterange':daterange,'user_id':user_id},
+            success:function(result){
+                if(result.return==1){
+                    $("#list_times").html(result.html);
+                }
+            }
+        });
+    }
+     
+    
 </script>
 
 <script>

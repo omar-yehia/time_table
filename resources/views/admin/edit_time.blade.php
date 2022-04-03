@@ -1,5 +1,6 @@
-<h5 class="mt-1">Edit Time</h5>
 <form id='edit_time_form'>
+    <h5 class="mt-1">Edit Time</h5>
+
     {{csrf_field()}}
     <input type="hidden" name="time_id" value="{{$time->id}}">
     <label for="date">Date</label>

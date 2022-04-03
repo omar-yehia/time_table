@@ -1,18 +1,6 @@
 
 <div id="body" class="container">
 
-<!-- search in times -->
-<h3 class="mt-3">Search</h3>
-<form id="search_form">
-    {{csrf_field()}}
-    <input id="pharmacy_name" class="form-control" type="text" name="pharmacy_name" placeholder="pharmacy_name">
-    <label for="search_date">Date</label>
-    <input id="search_date" type="text" name="daterange"/>
-    <button class="btn btn-primary">Search</button>
-</form>
-<button id="reset" class="btn btn-info">Reset</button>
-
-
 <!-- create time -->
 <h3 class="mt-3">Create Time</h3>
 
@@ -32,11 +20,29 @@
 <div id="rows_container">
 </div>
 
+<!-- search times -->
+<div id="search_times" class="mt-3"> 
+</div>
+
 <!-- list times -->
 <div id="list_times" class="mt-3"> 
 </div>
 
 <script>
+    function renderSearchTime(){
+        $.ajax({
+            url:"{{route('getSearchTimeForm')}}",
+            type:'POST',
+            data: {'_token':"{{csrf_token()}}"},
+            success:function(result){
+                if(result.return==1){
+                    $("#search_times").html(result.html);
+                }
+            }
+        });  
+    }
+    renderSearchTime();
+
     function renderTimeList(){
         var daterange=$('#search_date').val();
         var pharmacy_name=$('#pharmacy_name').val();
@@ -46,11 +52,12 @@
             data: {'_token':"{{csrf_token()}}",'pharmacy_name':pharmacy_name,'daterange':daterange},
             success:function(result){
                 if(result.return==1){
-                    $("#list_times").html(result.html_list_times);
+                    $("#list_times").html(result.html);
                 }
             }
-        });  
+        });
     }
+    renderTimeList();
 </script>
 
 <script>
@@ -99,39 +106,7 @@
         });
     }
 </script>
-
-<!-- search and reset -->
-<script>
-    $(function() {
-        $('#search_date').daterangepicker({
-            opens: 'left',
-            minDate: new Date(),
-            "locale": {
-                "format": "YYYY-MM-DD",   
-            }
-        });
-    });
-    $('#reset').on('click',function(){
-        $('#pharmacy_name').val('');
-        $('#search_date').val('');
-        renderTimeList();
-        
-    });
-    $('#search_form').on('submit',function(e){
-        e.preventDefault();
-        renderTimeList();
-    });    
-</script>
-
-
-<!-- load times list on page ready -->
-<script>
-$(document).ready(function(){
-    $('#search_date').val('');
-    renderTimeList();
-});
-</script>
-
-
+ 
+ 
 </div>
 

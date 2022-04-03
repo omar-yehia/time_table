@@ -26,6 +26,11 @@
 
 
 <script>
+    $('.view').on('click',function(){
+        var id=$(this).data('id');
+        renderSearchTime();
+        renderTimeList(id);
+    });
     $('.delete').on('click',function(){
         var id=$(this).data('id');
         $.ajax({

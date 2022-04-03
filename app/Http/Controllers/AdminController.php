@@ -138,8 +138,11 @@ class AdminController extends Controller
         }
         $data['roles']=implode(',',$request->roles);
         
-        session()->forget('admin_permissions');
-        session()->put('admin_permissions',$request->roles);
+        //if admin edited his own permissions, refresh them in the session
+        if(session('authorized_admin')==$admin_id){
+            session()->forget('admin_permissions');
+            session()->put('admin_permissions',$request->roles);
+        }
 
         $success=Admin::where('id',$admin_id)->update($data);
         return ['return'=>1,'html'=>""];

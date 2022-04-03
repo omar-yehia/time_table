@@ -1,9 +1,8 @@
 
 <div id="body" class="container">
 
- 
-
 <!-- create pharmacy -->
+<h3 class="mt-3">Create Pharmacy</h3>
 <div class="row">
     <div class="col-md-12">
         <form id="create_form">
@@ -16,32 +15,31 @@
     </div>
 
 </div>
-
-    <!-- list pharmacies -->
-    <div class="text-success">
-
-    <table class="table table-striped">
-        <thead>
-        <tr>
-        <th scope="col">#</th>
-        <th scope="col">name</th>
-        <th scope="col">actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($allPharmacies as $pharmacy)
-        <tr>
-        <th scope="row">{{1+$loop->index}}</th>
-            <td>{{$pharmacy->name}}</td>
-            <td>
-                <button class="edit btn btn-info">edit</button>
-                <button class="view btn btn-info">view time table</button>
-            </td>
-        </tr>
-        @endforeach
-        </tbody>
-    </table>
+<!-- edit pharmacy -->
+<div id="edit_pharmacy">
 </div>
+
+<!-- list pharmacies -->
+<div id="list_pharmacies">
+</div>
+
+
+<script>
+    function renderPharmacyList(){
+        $.ajax({
+            url:"{{route('getListOfPharmacies')}}",
+            type:'POST',
+            data: {'_token':"{{csrf_token()}}"},
+            success:function(result){
+                if(result.return==1){
+                    $("#list_pharmacies").html(result.html);
+                }
+            }
+        });  
+    }
+    renderPharmacyList();
+</script>
+
 <script>
     $('#create_form').on('submit',function(e){
         e.preventDefault();
@@ -50,20 +48,13 @@
             type:'GET',
             data:$(this).serialize(),
             success:function(result){
-                var number=$('#number_of_pharmacies').data('number');
-                $('#number_of_pharmacies').text(++number);
-                $("#admin_app_container").html(result);
+                $('#create_form').trigger("reset");
+                renderPharmacyList();
+                renderStats();
             }
         });
     });
-</script>
-<script>
-    setTimeout(function() {
-      $('#success').fadeOut('slow');
-    }, 2000);
-    setTimeout(function() {
-      $('#error').fadeOut('slow');
-    }, 2000);
+
 </script>
 
 </div>

@@ -23,11 +23,33 @@ Route::get('/dashboard','AdminController@dashboard')->name('dashboard');
 Route::match(['GET','POST'],'/home','UserController@home')->name('home');
 
 Route::get('/view_user_times','TimeController@view_user_times')->name('view_user_times');
-Route::post('/getListOfTimes','TimeController@getListOfTimes')->name('getListOfTimes');
 
-Route::post('/getEditTimeHTML','TimeController@getEditTimeHTML')->name('getEditTimeHTML');
+Route::post('/getStats','AdminController@getStats')->name('getStats');
+
+Route::post('/getListOfPharmacies','PharmacyController@getListOfPharmacies')->name('getListOfPharmacies');
+Route::get('/editPharmacy','PharmacyController@editPharmacy')->name('editPharmacy');
+Route::post('/updatePharmacy','PharmacyController@updatePharmacy')->name('updatePharmacy');
+Route::post('/deletePharmacy','PharmacyController@deletePharmacy')->name('deletePharmacy');
+
+Route::post('/getListOfUsers','UserController@getListOfUsers')->name('getListOfUsers');
+Route::get('/editUser','UserController@editUser')->name('editUser');
+Route::post('/updateUser','UserController@updateUser')->name('updateUser');
+Route::post('/deleteUser','UserController@deleteUser')->name('deleteUser');
+
+Route::post('/getListOfAdmins','AdminController@getListOfAdmins')->name('getListOfAdmins');
+Route::get('/editAdmin','AdminController@editAdmin')->name('editAdmin');
+Route::post('/updateAdmin','AdminController@updateAdmin')->name('updateAdmin');
+Route::post('/deleteAdmin','AdminController@deleteAdmin')->name('deleteAdmin');
+
+Route::post('/getListOfTimes','TimeController@getListOfTimes')->name('getListOfTimes');
+Route::post('/editTime','TimeController@editTime')->name('editTime');
 Route::post('/updateTime','TimeController@updateTime')->name('updateTime');
 Route::post('/deleteTime','TimeController@deleteTime')->name('deleteTime');
+
+Route::post('/getListOfRoles','RoleController@getListOfRoles')->name('getListOfRoles');
+Route::get('/editRole','RoleController@editRole')->name('editRole');
+Route::post('/updateRole','RoleController@updateRole')->name('updateRole');
+Route::post('/deleteRole','RoleController@deleteRole')->name('deleteRole');
 
 Route::resource('admins', 'AdminController');
 Route::resource('users', 'UserController');

@@ -10,11 +10,7 @@ use Illuminate\Http\Request;
 
 class TimeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function index()
     {
         $allTimes=Time::orderBy('date')->get();
@@ -108,12 +104,7 @@ class TimeController extends Controller
 
         return ['return'=>1,'html_list_times'=>$html_list_times];
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function create(Request $request)
     {
         $valid_admin=session('authorized_admin') && in_array('users',session('admin_permissions'));
@@ -138,7 +129,7 @@ class TimeController extends Controller
             }
         }
         
-        $success=Time::create([
+        $success=Time::insert([
             'user_id'=>$user_id,
             'pharmacy_id'=>$pharmacy_id,
             'day'=>$day,
@@ -152,62 +143,6 @@ class TimeController extends Controller
 
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Time  $time
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Time $time)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Time  $time
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Time $time)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Time  $time
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Time $time)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Time  $time
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Time $time)
-    {
-        //
-    }
     public function deleteTime(Request $request)
     {
         $id=$request->id;
@@ -273,7 +208,7 @@ class TimeController extends Controller
         ])->render();
     }
 
-    public function getEditTimeHTML(Request $request){
+    public function editTime(Request $request){
         // dd($request->all());
         $time=Time::find($request->id);
         if(!$time){ return ['return'=>0,'html'=>""];}
@@ -282,7 +217,7 @@ class TimeController extends Controller
         $allUsers=[];
         if(session('authorized_admin')){ $allUsers=User::all();}
 
-        $html=view('edit_time')->with([
+        $html=view('admin.edit_time')->with([
             'time'=>$time,
             'allPharmacies'=>$allPharmacies,
             'allUsers'=>$allUsers,

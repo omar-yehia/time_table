@@ -53,8 +53,6 @@
 
 
 <script>
-    
-    // show edit time form
     $('.delete_time_btn').on('click',function(){
         var id=$(this).data('id');
         $.ajax({
@@ -63,6 +61,7 @@
             data: {'_token':"{{csrf_token()}}",'id':id},
             success:function(result){
                 renderTimeList();
+                renderStats();
             }
         });
     });
@@ -70,12 +69,13 @@
     $('.edit_time_btn').on('click',function(){
         var id=$(this).data('id');
         $.ajax({
-            url:"{{route('getEditTimeHTML')}}",
+            url:"{{route('editTime')}}",
             type:'POST',
             data: {'_token':"{{csrf_token()}}",'id':id},
             success:function(result){
                 if(result.return==1){
                     $('#edit_time_section').html(result.html);
+                    scrollToElement('edit_time_section');
                     attachEvenetListener2();
                 }
             }
@@ -94,7 +94,7 @@
                     if(result.return==1){
                         thisForm.remove();
                         renderTimeList();
-                        // $('#edit_time_section').html(result.html);
+                        renderStats();
                     }else{
                         showError(result.html);
                     }

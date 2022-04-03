@@ -25,12 +25,7 @@ class UserController extends Controller
             'user'=>$user,
         ]);
     }
-    
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+     
     public function index()
     {
         if(empty(session('authorized_admin'))){return $this->logout();}
@@ -40,83 +35,63 @@ class UserController extends Controller
             'allUsers'=>$allUsers
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function create(Request $request)
     {
         if(empty(session('authorized_admin'))){return ['return'=>0,'html'=>""];}
-        $success=User::create([
+        $success=User::insert([
             'name'=>$request->name,
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
         ]);
 
-        if($success){
-            $allUsers=User::all();
-            return ['return'=>1,'html'=>view('admin.users')->with(['allUsers'=>$allUsers])->render()];
+        if($success){ return ['return'=>1,'html'=>''];}
+        return ['return'=>0,'html'=>''];
+    }
+ 
+    public function getListOfUsers(){
+        $allowed_admin=session('authorized_admin') && in_array('users',session('admin_permissions'));
+        if(!$allowed_admin){return ['return'=>0,'html'=>''];}
+        $users=User::all();
+
+        $html=view('admin.list_users')->with([
+            'users'=>$users,
+            ])->render();
+
+        return ['return'=>1,'html'=>$html];
+    }
+    public function editUser(Request $request)
+    {
+        $id=$request->id;
+        $valid_admin=session('authorized_admin') && in_array('users',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+        $user=User::find($id);
+        if(!$user) return ['return'=>0,''];
+
+        $html=view('admin.edit_user')->with(['user'=>$user])->render();
+        return ['return'=>1,'html'=>$html];
+    }
+    public function updateUser(Request $request){
+        $user_id=$request->user_id;
+        $data['name']=$request->name;
+        $data['email']=$request->email;
+        $password=$request->password;
+        if($password){
+            $data['password']=Hash::make($password);
         }
-        else{
-            return ['return'=>0,'html'=>""];
-        }
+        
+        $success=User::where('id',$user_id)->update($data);
+        return ['return'=>1,'html'=>""];
+    }
+    public function deleteUser(Request $request)
+    {
+        $id=$request->id;
+        $user=User::find($id);
+        if(!$user) return ['return'=>0,'html'=>"couldn't delete"];
+        $user->times()->delete();
+        $user->delete();
+
+        ['return'=>1,'html'=>""];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
-    {
-        //
-    }
 }

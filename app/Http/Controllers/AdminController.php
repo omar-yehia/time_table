@@ -56,12 +56,7 @@ class AdminController extends Controller
         }
 
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function index()
     {
         $all_admins=Admin::all();
@@ -71,76 +66,24 @@ class AdminController extends Controller
             'all_roles'=>$all_roles,
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function create(Request $request)
     {
-        dd($request->all());
-        // roles
+        $data['name']=$request->name;
+        $data['email']=$request->email;
+        $data['password']=Hash::make($request->password);
+        $data['roles']=implode(',',$request->roles);
+        
+        $success=Admin::insert($data);
+        return ['return'=>1,'html'=>""];
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Admin $admin)
-    {
-        //
-    }
-
     public function dashboard()
     {
+        if(empty(session('authorized_admin'))){ return $this->logout();}
+        return view('admin.dashboard');
+    }
+
+    public function getStats(){
         if(empty(session('authorized_admin'))){ return $this->logout();}
         $number_of_users=User::count();
         $number_of_pharmacies=Pharmacy::count();
@@ -148,15 +91,60 @@ class AdminController extends Controller
         $number_of_times=Time::count();
         $number_of_roles=Role::count();
         
-        return view('admin.dashboard')->with([
+        $html=view('admin.stats')->with([
             'number_of_users'=>$number_of_users,
             'number_of_pharmacies'=>$number_of_pharmacies,
             'number_of_admins'=>$number_of_admins,
             'number_of_times'=>$number_of_times,
             'number_of_roles'=>$number_of_roles,
-        ]);
+        ])->render();
 
-
+        return ['return'=>1,'html'=>$html];
     }
     
+    public function getListOfAdmins(){
+        $allowed_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
+        if(!$allowed_admin){return ['return'=>0,'html'=>''];}
+        $admins=Admin::all();
+
+        $html=view('admin.list_admins')->with([
+            'admins'=>$admins,
+            ])->render();
+
+        return ['return'=>1,'html'=>$html];
+    }
+    public function editAdmin(Request $request)
+    {
+        $id=$request->id;
+        $valid_admin=session('authorized_admin') && in_array('admins',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+        $admin=Admin::find($id);
+        if(!$admin) return ['return'=>0,''];
+        $all_roles=Role::all();
+
+        $html=view('admin.edit_admin')->with(['admin'=>$admin,'all_roles'=>$all_roles])->render();
+        return ['return'=>1,'html'=>$html];
+    }
+    public function updateAdmin(Request $request){
+        $admin_id=$request->admin_id;
+        $data['name']=$request->name;
+        $data['email']=$request->email;
+        $password=$request->password;
+        if($password){
+            $data['password']=Hash::make($password);
+        }
+        $data['roles']=implode(',',$request->roles);
+        
+        $success=Admin::where('id',$admin_id)->update($data);
+        return ['return'=>1,'html'=>""];
+    }
+    public function deleteAdmin(Request $request)
+    {
+        $id=$request->id;
+        $admin=Admin::find($id);
+        if(!$admin) return ['return'=>0,'html'=>"couldn't delete"];
+        $admin->delete();
+
+        ['return'=>1,'html'=>""];
+    }
 }

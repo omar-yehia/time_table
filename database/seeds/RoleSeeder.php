@@ -13,8 +13,8 @@ class RoleSeeder extends Seeder
     {
         $roles=[
             [
-                'name' => "super",
-                'description' => "create,view,edit and delete anything (roles,admins,users,pharmacies,times)"
+                'name' => "admins",
+                'description' => "create,view,edit and delete admins"
             ],
             [
                 'name' => "users",
@@ -26,7 +26,7 @@ class RoleSeeder extends Seeder
             ],
             [
                 'name' => "times",
-                'description' => "create,view,edit and delete time tables only"
+                'description' => "create,view,edit and delete times"
             ],
             
         ];

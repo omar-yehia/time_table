@@ -28,38 +28,12 @@
         $('#pharmacy_name').val('');
         $('#search_date').val('');
         renderTimeList();
-        // var user_id={ {$user->id}};
-        // $.ajax({
-        //     url:"{{route('home')}}",
-        //     type:'GET',
-        //     data:{user_id:user_id},
-        //     success:function(result){
-        //         if(result){
-        //             $("body").html(result);
-        //         }
-        //     }
-        // });
+        renderStats();
     });
     $('#search_form').on('submit',function(e){
         e.preventDefault();
         renderTimeList();
+        renderStats();
     });
-    
-    // $('#search_form').on('submit',function(e){
-    //     e.preventDefault();
-    //     // var user_id={ {$user->id}};
-    //     var daterange=$('#date').val();
-    //     var pharmacy_name=$('#pharmacy_name').val();
-    //     $.ajax({
-    //         url:"{{route('home')}}",
-    //         type:'GET',
-    //         data:$(this).serialize() + "&user_id=" + user_id,
-    //         success:function(result){
-    //             if(result){
-    //                 $("body").html(result);
-    //             }
-    //         }
-    //     });
-    // });
     
 </script>

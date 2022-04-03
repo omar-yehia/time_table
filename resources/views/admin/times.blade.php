@@ -37,19 +37,6 @@
 </div>
 
 <script>
-    function showError(message){
-        $('#error').html(message);
-        $("#error").show();
-        $([document.documentElement, document.body]).animate({
-            scrollTop: $("#error").offset().top
-        }, 200);
-        setTimeout(function() {
-            $('#error').fadeOut('slow');
-        }, 5000);
-
-
-    }
-
     function renderTimeList(){
         var daterange=$('#search_date').val();
         var pharmacy_name=$('#pharmacy_name').val();
@@ -103,6 +90,7 @@
                     if(result.return==1){
                         thisForm.remove();
                         renderTimeList();
+                        renderStats();
                     }else if(result.return==0){
                         showError(result.html);
                     }
@@ -127,6 +115,7 @@
         $('#pharmacy_name').val('');
         $('#search_date').val('');
         renderTimeList();
+        
     });
     $('#search_form').on('submit',function(e){
         e.preventDefault();

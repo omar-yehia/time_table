@@ -7,26 +7,17 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function index()
     {
         $all_roles=Role::all();
         return view('admin.roles')->with(['all_roles'=>$all_roles]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function create(Request $request)
     {
         // dd($request->all());
-        $success=Role::create([
+        $success=Role::insert([
             'name'=>$request->name,
             'description'=>$request->description,
         ]);
@@ -40,60 +31,45 @@ class RoleController extends Controller
         }
     }
 
+    public function getListOfRoles(){
+        $allowed_admin=session('authorized_admin') && in_array('roles',session('admin_permissions'));
+        if(!$allowed_admin){return ['return'=>0,'html'=>''];}
+        $roles=Role::all();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        $html=view('admin.list_roles')->with([
+            'roles'=>$roles,
+            ])->render();
+
+        return ['return'=>1,'html'=>$html];
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Role  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Role $role)
+    public function editRole(Request $request)
     {
-        //
+        $id=$request->id;
+        $valid_admin=session('authorized_admin') && in_array('roles',session('admin_permissions'));
+        if(!$valid_admin){$this->logout();}
+        $role=Role::find($id);
+        if(!$role) return ['return'=>0,''];
+
+        $html=view('admin.edit_role')->with(['role'=>$role])->render();
+        return ['return'=>1,'html'=>$html];
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Role  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Role $role)
-    {
-        //
+    public function updateRole(Request $request){
+        $role_id=$request->role_id;
+        $name=$request->name;
+        $description=$request->description;
+        $success=Role::where('id',$role_id)->update([
+            'name'=>$name,
+            'description'=>$description,
+        ]);
+        return ['return'=>1,'html'=>""];
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Role  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Role $role)
+    public function deleteRole(Request $request)
     {
-        //
-    }
+        $id=$request->id;
+        $role=Role::find($id);
+        if(!$role) return ['return'=>0,'html'=>"couldn't delete"];
+        $role->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Role  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Role $role)
-    {
-        //
+        ['return'=>1,'html'=>""];
     }
 }

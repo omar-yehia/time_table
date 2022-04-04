@@ -15,25 +15,9 @@ class TimeController extends Controller
     {
         $valid_admin=session('authorized_admin') && in_array('times',session('admin_permissions'));
         if(!$valid_admin){return $this->logout();}
-
-        $allTimes=Time::orderBy('date')->get();
-
-        foreach($allTimes as $time){
-            $user_name=User::find($time->user_id);
-            $time->user=$user_name->name;
-            $pharmacy_name=Pharmacy::find($time->pharmacy_id);
-            $time->pharmacy=$pharmacy_name->name;
-            $time->day=date('l',strtotime($time->day));
-            $time->date=date('d-m-Y',strtotime($time->date));
-            $time->start_time=date('h:i A',strtotime($time->start_time));
-            $time->end_time=date('h:i A',strtotime($time->end_time));
-        }
-
-        $allPharmacies=Pharmacy::all();
+        
         $allUsers=User::all();
         return view('admin.times')->with([
-            'allTimes'=>$allTimes,
-            'allPharmacies'=>$allPharmacies,
             'allUsers'=>$allUsers,
         ]);
     }
@@ -99,7 +83,7 @@ class TimeController extends Controller
         if($start_date && $end_date){
             $times->whereBetween('date',[$start_date,$end_date]);
         }
-        $times=$times->orderBy('date')->get();
+        $times=$times->orderBy('date')->orderBy('start_time')->get();
 
         foreach($times as $time){
             $user=User::find($time->user_id);
@@ -216,7 +200,7 @@ class TimeController extends Controller
                     <div class='col-md-2'><select name='pharmacy_id'>".$htmlPharmacy."</select></div>
                     <div class='col-md-2'><input type='time' name='start_time' required></div>
                     <div class='col-md-2'><input type='time' name='end_time' required></div>
-                    <div class='col-md-2'><button>Create</button></div>
+                    <div class='col-md-2'><button class='btn btn-success'>Create</button></div>
                 </div>
                 
                 </form>

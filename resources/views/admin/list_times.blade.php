@@ -40,7 +40,12 @@
         <td>{{$time->start_time}}</td>
         <td>{{$time->end_time}}</td>
         <td>
-            @if(date('Y-m-d',strtotime($time->date)) >=date('Y-m-d'))
+            @php
+                $time_of_start=strtotime($time->date." ".$time->start_time);
+                $upcoming = time() < $time_of_start;
+            @endphp
+            
+            @if($upcoming)
             <button data-id="{{$time->id}}" class="edit_time_btn btn btn-info">edit</button>
             <button data-id="{{$time->id}}" class="delete_time_btn btn btn-danger">delete</button>
             @endif
